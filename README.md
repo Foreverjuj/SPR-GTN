@@ -1,4 +1,4 @@
-# P-GTNS: Protein Graph Transformer Network for Protein Function Prediction
+# SPE-GTN
 
 ## Project Overview
 
