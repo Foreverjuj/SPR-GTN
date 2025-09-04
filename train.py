@@ -127,7 +127,7 @@ def str2bool(v):
 
 if __name__ == "__main__":
     p = argparse.ArgumentParser()
-    # 添加命令行参数...
+   
     parser = argparse.ArgumentParser(description="Simulate training for various tasks.")
     parser.add_argument("--num_epochs", type=int, default=15, help="Number of epochs for training.")
     parser.add_argument("--alpha", type=float, default=0.5, help="Alpha parameter.")
@@ -139,5 +139,6 @@ if __name__ == "__main__":
     config.num_nodes = args.num_nodes
     config.k0 = args.k0
     config.alpha = args.alpha
+
 
     train(config, args.task, args.suffix)
