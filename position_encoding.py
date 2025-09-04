@@ -10,15 +10,6 @@ from torch_geometric.data import Data
 #adj_matrix = np.loadtxt('adj_matrix.txt', delimiter=',')
 # feature_matrix = np.loadtxt('feature_matrix.txt', delimiter=',')
 
-adj_matrix = np.array([[0, 1, 0, 1],
-                       [1, 0, 1, 0],
-                       [0, 1, 0, 1],
-                       [1, 0, 1, 0]])
-
-feature_matrix = np.array([[1, 2,7,8],
-                           [3, 4,5,6],
-                           [5, 6,4,3],
-                           [7, 8,2,4]])
 
 
 adj_matrix = torch.from_numpy(adj_matrix).float()
@@ -32,7 +23,7 @@ class GraphConvolution(nn.Module):
         self.linear = nn.Linear(in_features,out_features)
 
     def forward(self, input, adj_matrix):
-        # 执行矩阵乘法之前，确保 input 和 adj_matrix 的维度匹配
+        
         # adj_matrix = adj_matrix.unsqueeze(0)  # 仅进行 unsqueeze，不再进行 repeat
         # input = input.unsqueeze(-1)
         # support = torch.matmul(adj_matrix, input).squeeze(-1)  # 将 support 中的最后一个维度压缩掉
@@ -60,14 +51,13 @@ class GTN(nn.Module):
 
        
         self.positional_encoding_mlp = nn.Sequential(
-            nn.Linear(embed_dim,embed_dim), # 输入和输出维度都是embed——dim
+            nn.Linear(embed_dim,embed_dim), 
             nn.ReLU(),
             nn.Linear(embed_dim,embed_dim)
         )
 
-        self.linear = nn.Linear(embed_dim, embed_dim)  # 添加线性层
+        self.linear = nn.Linear(embed_dim, embed_dim)  
 
-        # 在此定义您的 GTN 层或任何其他网络层
     def construct_graph(self, adj_matrix):
         num_nodes = adj_matrix.shape[0]
         graph = {}
@@ -92,7 +82,7 @@ class GTN(nn.Module):
 
 
         node_degrees = node_degrees.float().unsqueeze(1)
-        node_degrees = torch.clamp(node_degrees, min=1)  # 避免被零除
+        node_degrees = torch.clamp(node_degrees, min=1)
 
        
 
@@ -105,11 +95,11 @@ class GTN(nn.Module):
 
         return positional_enc
 
-    def forward(self, adj_matrix, feature_matrix): #features
+    def forward(self, adj_matrix, feature_matrix):
        
 
         
-        graph = self.construct_graph(adj_matrix)  # 从邻接矩阵构造图
+        graph = self.construct_graph(adj_matrix) 
         positional_enc = self.positional_encoding(graph)
         features = feature_matrix + positional_enc
 
@@ -127,13 +117,13 @@ class GTN(nn.Module):
        
         self_attention_output, _ = self.attention(gcn2_output.unsqueeze(0), gcn2_output.unsqueeze(0), gcn2_output.unsqueeze(0))
         #self_attention_output, _ = self.attention(gcn2_output, gcn2_output, gcn2_output)
-        #self_attention_output = self_attention_output.permute(1, 0,2)  # 将维度 [batch_size, seq_len, embed_dim] 调整为 [seq_len, batch_size, embed_dim]
+        #self_attention_output = self_attention_output.permute(1, 0,2)  
         self_attention_output = self.dropout(self_attention_output)
         # self_attention_output = self.layer_norm(gcn2_output + self_attention_output)
         self_attention_output = self.layer_norm(gcn2_output + self_attention_output)
 
       
-        #support = torch.matmul(adj_matrix, self_attention_output.transpose(0, 1))  # 调整维度匹配
+        #support = torch.matmul(adj_matrix, self_attention_output.transpose(0, 1)) 
 
        
         output = gcn2_output + self_attention_output
@@ -141,6 +131,7 @@ class GTN(nn.Module):
 
 
         return output
+
 
 
 
