@@ -1,70 +1,70 @@
-# SPE-GTN
+# P-GTNS: Protein Graph Transformer Network for Protein Function Prediction
 
-## 项目简介
+## Project Overview
 
-本项目基于蛋白质序列和图结构信息，构建蛋白质图并使用 Graph Transformer Network 进行蛋白质功能预测。
-支持从 PDB 或 FASTA 文件生成图数据，训练、测试和预测模型。
+This project constructs protein graphs based on sequence and structural information and uses a Graph Transformer Network for protein function prediction.
+It supports generating graph data from PDB or FASTA files, as well as training, testing, and predicting with the model.
 
-## 项目目录
+## Project Structure
 
 ```
 P-GTNS/
 │
-├─ data/processed/        # 处理后的序列或结构文件
-├─ graph_embding.py       # 图构建及相关函数
-├─ train.py               # 训练脚本
-├─ test.py                # 测试脚本
-├─ predictor.py           # 预测脚本
-└─ requirements.txt       # 依赖库
+├─ data/processed/        # Processed sequence or structure files
+├─ graph_embding.py       # Graph construction and related functions
+├─ train.py               # Training script
+├─ test.py                # Testing script
+├─ predictor.py           # Prediction script
+└─ requirements.txt       # Python dependencies
 ```
 
-## 安装依赖
+## Install Dependencies
 
-首先安装 Python 依赖：
+Install the required Python packages first:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-## 数据准备
+## Data Preparation
 
-将蛋白质序列或 PDB 文件放入 `data/processed/` 文件夹。
-GO 注释文件请放置在 `data/` 目录下，例如：
+Place protein sequences or PDB files into the `data/processed/` folder.
+Place the GO annotation file in the `data/` directory, for example:
 
 ```
 data/nrPDB-GO_2024.06.24_annot.tsv
 ```
 
-## 训练模型
+## Training the Model
 
-使用 `train.py` 训练模型并生成权重：
+Use `train.py` to train the model and generate weights:
 
 ```bash
 python train.py
 ```
 
-## 测试模型
+## Testing the Model
 
-使用 `test.py` 对训练好的模型进行测试：
+Use `test.py` to evaluate the trained model:
 
 ```bash
 python test.py
 ```
 
-## 进行预测
+## Making Predictions
 
-使用 `predictor.py` 对新蛋白质数据进行功能预测：
+Use `predictor.py` to make predictions on new protein data:
 
 ```bash
 python predictor.py
 ```
 
-## 注意事项
+## Notes
 
-* 输入文件格式必须正确：
+* Input file formats must be correct:
 
-  * PDB 文件用于三维结构图生成
-  * FASTA 文件仅能生成序列邻接图
-* GPU 建议使用 CUDA 支持，否则可改用 CPU 训练
-* ESM 模型权重需放置在 `model_weight/esm1b.pt`
+  * PDB files are used for generating 3D structure graphs
+  * FASTA files can only generate sequence adjacency graphs
+* GPU with CUDA is recommended; otherwise, CPU can be used for training
+* ESM model weights should be placed in `model_weight/esm1b.pt`
 
