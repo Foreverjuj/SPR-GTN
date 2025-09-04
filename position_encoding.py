@@ -58,7 +58,7 @@ class GTN(nn.Module):
         self.dropout = nn.Dropout(0.5)
 
 
-        # 定义位置编码映射层
+       
         self.positional_encoding_mlp = nn.Sequential(
             nn.Linear(embed_dim,embed_dim), # 输入和输出维度都是embed——dim
             nn.ReLU(),
@@ -94,7 +94,7 @@ class GTN(nn.Module):
         node_degrees = node_degrees.float().unsqueeze(1)
         node_degrees = torch.clamp(node_degrees, min=1)  # 避免被零除
 
-        # 计算位置编码
+       
 
         positional_enc = torch.zeros(self.num_nodes, self.embed_dim)
         # positional_enc = self.positional_encoding_mlp(node_degrees)
@@ -106,27 +106,25 @@ class GTN(nn.Module):
         return positional_enc
 
     def forward(self, adj_matrix, feature_matrix): #features
-        # 将 GTN 层应用于特征
+       
 
-        # 对特征应用位置编码
+        
         graph = self.construct_graph(adj_matrix)  # 从邻接矩阵构造图
         positional_enc = self.positional_encoding(graph)
         features = feature_matrix + positional_enc
 
-        # 继续添加其他操作
 
-        # GCN
+       
         gcn1_output = F.relu(self.gcn1(features,adj_matrix))
         gcn2_output = F.relu(self.gcn2(gcn1_output,adj_matrix))
 
-        # 调整维度，以匹配 nn.MultiheadAttention 的要求
-        # 调整维度，以匹配 nn.MultiheadAttention 的要求
+        
         # gcn2_output = gcn2_output.transpose(0,1)  # 将维度 [batch_size, seq_len, embed_dim] 调整为 [seq_len, batch_size, embed_dim]
         # gcn2_output = gcn2_output.unsqueeze(0)  # 将维度 [seq_len, batch_size, embed_dim] 调整为 [1, seq_len, batch_size, embed_dim]
         # gcn2_output = gcn2_output.permute(1,0,2)  # 将维度 [seq_len, batch_size, embed_dim] 调整为 [batch_size, seq_len, embed_dim]
 
 
-        # 自注意力
+       
         self_attention_output, _ = self.attention(gcn2_output.unsqueeze(0), gcn2_output.unsqueeze(0), gcn2_output.unsqueeze(0))
         #self_attention_output, _ = self.attention(gcn2_output, gcn2_output, gcn2_output)
         #self_attention_output = self_attention_output.permute(1, 0,2)  # 将维度 [batch_size, seq_len, embed_dim] 调整为 [seq_len, batch_size, embed_dim]
@@ -134,10 +132,10 @@ class GTN(nn.Module):
         # self_attention_output = self.layer_norm(gcn2_output + self_attention_output)
         self_attention_output = self.layer_norm(gcn2_output + self_attention_output)
 
-        # 矩阵乘法
+      
         #support = torch.matmul(adj_matrix, self_attention_output.transpose(0, 1))  # 调整维度匹配
 
-        # 残差连接
+       
         output = gcn2_output + self_attention_output
         #output = self.linear(support)
 
@@ -146,49 +144,5 @@ class GTN(nn.Module):
 
 
 
-# # 用法示例
-num_nodes = adj_matrix.shape[0]  # PPI网络中的节点数量
-embed_dim = feature_matrix.shape[1]  # 节点嵌入的维度
 
-
-gtn_model = GTN(num_nodes, embed_dim)
-output = gtn_model(adj_matrix, feature_matrix)
-
-print("Input features:")
-print(feature_matrix)
-print("Output features after positional encoding:")
-print(output)
-
-
-# 创建随机 PPI 图和节点特征以进行演示
-# graph = torch.rand(num_nodes, num_nodes)
-# features = torch.rand(num_nodes, embed_dim)
-
-
-# def train_and_evaluate(adj_matrix, feature_matrix, embed_dim, num_heads):
-#     num_nodes = adj_matrix.shape[0]  # 图中节点数量
-#     gtn_model = GTN(num_nodes, embed_dim, num_heads)
-#
-#     # Perform model training and evaluation
-#     # ...
-#
-#     # Return the evaluation score
-#     # return evaluation_score
-#
-# # Define the parameter grid for grid search
-# param_grid = {
-#     'embed_dim': [4, 8, 16],  # Possible values for embed_dim
-#     'num_heads': [2, 4, 8]  # Possible values for num_heads
-# }
-#
-# # Perform grid search
-# best_score = float("-inf")
-# best_params = {}
-#
-# for embed_dim in param_grid['embed_dim']:
-#     for num_heads in param_grid['num_heads']:
-#         score = train_and_evaluate(adj_matrix, feature_matrix, embed_dim, num_heads)
-#         if score > best_score:
-#             best_score = score
-#             best_params = {'embed_dim': embed_dim, 'num_heads': num_heads}
 
