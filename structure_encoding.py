@@ -10,7 +10,7 @@ import torch.nn.functional as F
 #adj_matrix = np.loadtxt('adj_matrix.txt', delimiter=',')
 # feature_matrix = np.loadtxt('feature_matrix.txt', delimiter=',')
 
-# 输入邻接矩阵和特征矩阵
+
 
 
 
@@ -32,36 +32,34 @@ class GraphTransformer(nn.Module):
         self.lambda_operator = nn.Linear(hidden_dim, output_dim)
 
     def subgraph_extractor(self, i, adj_matrix, k, k0):
-        subgraph = torch.eye(self.num_nodes)  # 起始子图
+        subgraph = torch.eye(self.num_nodes)  
         for _ in range(k):
-            subgraph = torch.matmul(adj_matrix, subgraph)  # 逐层扩展子图
-        subgraph = subgraph[i]  # 提取与节点i相关的子图
+            subgraph = torch.matmul(adj_matrix, subgraph) 
+        subgraph = subgraph[i]  
 
-        # eigenvalues = torch.symeig(subgraph, eigenvectors=True)[0]  # 提取特征值
-        # eigenvalues = eigenvalues[:k0]  # 选择前k0个非零特征值
+        # eigenvalues = torch.symeig(subgraph, eigenvectors=True)[0]  
+        # eigenvalues = eigenvalues[:k0]  
 
-        # 提取特征值和特征向量
+       
         eigenvalues, eigenvectors = torch.symeig(subgraph, eigenvectors=True)
 
-        # 按特征值降序排序
+        
         indices = torch.argsort(eigenvalues, descending=True)
-        eigenvalues = eigenvalues[indices]  # 按排序后的顺序重新排列特征值
-        eigenvectors = eigenvectors[:, indices]  # 按排序后的顺序重新排列特征向量
+        eigenvalues = eigenvalues[indices] 
+        eigenvectors = eigenvectors[:, indices]  
 
-        # 非零特征值的索引
+        
         #nonzero_indices = torch.nonzero(eigenvalues)[:, 0]
         nonzero_indices = torch.nonzero(eigenvalues).squeeze(1)
 
-        # 非零特征值的数量可能小于k0
         k0 = min(k0, len(nonzero_indices))
 
-        # 选择前k0个非零特征值
+       
         #eigenvalues = eigenvalues[:k0]
 
-        # 选择与非零特征值对应的特征向量
         eigenvectors = eigenvectors[:, :k0]
 
-        # 将特征向量调整为正确的形状
+     
         eigenvectors = eigenvectors.T  # 调整形状为 (k0, num_nodes)
 
 
@@ -73,7 +71,7 @@ class GraphTransformer(nn.Module):
 
     def nonlinear_mapping(self, eigenvalues):
         # print("Eigenvalues shape in nonlinear_mapping:", eigenvalues.shape)
-        embedding = torch.tanh(eigenvalues)  # 使用非线性映射
+        embedding = torch.tanh(eigenvalues) 
         return embedding.unsqueeze(0)
 
     def forward(self, adj_matrix, feature_matrix):
@@ -94,4 +92,5 @@ class GraphTransformer(nn.Module):
         print("Output shape:", output.shape)
 
         return output
+
 
